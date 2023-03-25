@@ -6,7 +6,6 @@ public class SessionAnalyzer {
     private final List<Turn> turns;
     private final List<String> invalidEntries = new ArrayList<>();
     private final List<Long> invalidSessions = new ArrayList<>();
-    private boolean playerStand = false;
 
     public SessionAnalyzer(List<Turn> turns) {
         turns.sort(Comparator.comparingLong(Turn::getSessionID).thenComparingLong(Turn::getTimestamp));
@@ -30,22 +29,8 @@ public class SessionAnalyzer {
      */
     public void checkSessions() {
         for (Turn turn : turns) {
-            String action = turn.getAction();
-
             if (invalidSessions.contains(turn.getSessionID())) {
                 continue;
-            }
-
-            if (action.equals("P Stand")) {
-                playerStand = true;
-            }
-
-            if (action.equals("P Joined") || action.equals("D Redeal")) {
-                playerStand = false;
-            }
-
-            if (action.equals("P Hit") && playerStand) {
-                registerFault(turn);
             }
 
             if (!turn.isValidDealerHand()
